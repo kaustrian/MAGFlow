@@ -1,5 +1,5 @@
 __default__:
-    partition: main 
+    partition: msismall 
     time: 120 # default time (minutes)
     nodes: 1
     ntasks: 1
