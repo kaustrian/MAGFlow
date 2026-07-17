@@ -112,11 +112,11 @@ rule bowtie2_map_reads:
         index_r2 = temp(base_dir +'{sample}_assembly/{subset}_{modifier}/read_mapping/{sample}.rev.2.bt2')
     params: index = base_dir +'{sample}_assembly/{subset}_{modifier}/read_mapping/{sample}'
     conda: "../envs/read_mapping.yml"
-    threads: 32
+    threads: param_controller.make_threads_getter('bowtie2_map_reads')
     resources:
         time = param_controller.calculate_bowtie2_time,
-        mem_mb = 125000, #125GB
-        partition = "msismall"
+        mem_mb = param_controller.make_mem_getter('bowtie2_map_reads'),
+        partition = param_controller.make_partition_getter('bowtie2_map_reads')
     shell:
         """bowtie2-build {input.contigs} {params.index} --threads {threads}
 
@@ -136,11 +136,11 @@ rule generate_depth_files:
         depth_file = base_dir +'{sample}_assembly/{subset}_{modifier}/read_mapping/{sample}_depth.txt',
         paired_file = base_dir +'{sample}_assembly/{subset}_{modifier}/read_mapping/{sample}_paired.txt'
     conda: "../envs/metabat2.yml"
-    threads: 16
+    threads: param_controller.make_threads_getter('generate_depth_files')
     resources:
         time = param_controller.calculate_g_depth_time,
-        mem_mb = 125000, #125GB,
-        partition = "msismall"
+        mem_mb = param_controller.make_mem_getter('generate_depth_files'),
+        partition = param_controller.make_partition_getter('generate_depth_files')
     shell:
         "jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} --pairedContigs {output.paired_file} {input.bam}"
 
@@ -155,11 +155,11 @@ rule bin_metabat2:
         minCVSum=0,
         minCV=0.1,
         m=2000
-    threads: 16
+    threads: param_controller.make_threads_getter('bin_metabat2')
     resources:
         time = param_controller.calculate_metabat2_time,
-        mem_mb = 125000, #125GB,
-        partition = "msismall"
+        mem_mb = param_controller.make_mem_getter('bin_metabat2'),
+        partition = param_controller.make_partition_getter('bin_metabat2')
     shell:
         """
         mkdir {output.bins_dir} -p
@@ -180,11 +180,11 @@ rule bin_concoct:
     conda: "../envs/concoct.yml"
     params:
         chunk=1000
-    threads: 16
+    threads: param_controller.make_threads_getter('bin_concoct')
     resources:
         time = param_controller.calculate_concoct_time,
-        mem_mb = 125000, #125GB,
-        partition = "msismall"
+        mem_mb = param_controller.make_mem_getter('bin_concoct'),
+        partition = param_controller.make_partition_getter('bin_concoct')
     shell:
         """
         mkdir {output.bins_dir} -p 
@@ -210,11 +210,11 @@ rule bin_maxbin2:
     params:
         basename = base_dir +"{sample}_assembly/{subset}_{modifier}/binning/maxbin2/maxbin"
     conda: "../envs/maxbin2.yml"
-    threads: 32
+    threads: param_controller.make_threads_getter('bin_maxbin2')
     resources:
         time = param_controller.calculate_maxbin_time,
-        mem_mb = 125000, #125GB,
-        partition = "msismall"
+        mem_mb = param_controller.make_mem_getter('bin_maxbin2'),
+        partition = param_controller.make_partition_getter('bin_maxbin2')
     shell:
         """
         mkdir {output.bins_dir} -p
@@ -233,11 +233,11 @@ rule generate_consensus_bins_dastools:
         dastools_dir=directory(base_dir +"{sample}_assembly/{subset}_{modifier}/binning/dastools"),
         dastools_bins=directory(base_dir +"{sample}_assembly/{subset}_{modifier}/binning/dastools/{sample}_DASTool_bins")
     conda: "../envs/dastool.yml"
-    threads: 32
+    threads: param_controller.make_threads_getter('generate_consensus_bins_dastools')
     resources:
         time = param_controller.calculate_dastools_time,
-        mem_mb = 125000, #125GB,
-        partition = "msismall"
+        mem_mb = param_controller.make_mem_getter('generate_consensus_bins_dastools'),
+        partition = param_controller.make_partition_getter('generate_consensus_bins_dastools')
     shell:
         """
         mkdir {output.dastools_bins} -p
@@ -271,12 +271,11 @@ checkpoint evaluate_bins_checkm:
         checkm_table = base_dir + "{sample}_assembly/{subset}_{modifier}/checkm/dastools/output_table.txt",
         checkm_table_thresholded = base_dir + "{sample}_assembly/{subset}_{modifier}/checkm/dastools/threshold_table.txt"
     conda: "../envs/checkm.yml"
-    threads: 16
-    params: th = threshold
+    threads: param_controller.make_threads_getter('evaluate_bins_checkm')
     resources:
         time = param_controller.calculate_checkm_time,
-        mem_mb = 120000, #120GB
-        partition = "msismall"
+        mem_mb = param_controller.make_mem_getter('evaluate_bins_checkm'),
+        partition = param_controller.make_partition_getter('evaluate_bins_checkm')
     shell:
         """
         mkdir {output.checkm_dir} -p
