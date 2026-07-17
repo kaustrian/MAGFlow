@@ -116,7 +116,7 @@ rule bowtie2_map_reads:
     resources:
         time = param_controller.calculate_bowtie2_time,
         mem_mb = 125000, #125GB
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """bowtie2-build {input.contigs} {params.index} --threads {threads}
 
@@ -140,7 +140,7 @@ rule generate_depth_files:
     resources:
         time = param_controller.calculate_g_depth_time,
         mem_mb = 125000, #125GB,
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         "jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} --pairedContigs {output.paired_file} {input.bam}"
 
@@ -159,7 +159,7 @@ rule bin_metabat2:
     resources:
         time = param_controller.calculate_metabat2_time,
         mem_mb = 125000, #125GB,
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """
         mkdir {output.bins_dir} -p
@@ -184,7 +184,7 @@ rule bin_concoct:
     resources:
         time = param_controller.calculate_concoct_time,
         mem_mb = 125000, #125GB,
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """
         mkdir {output.bins_dir} -p 
@@ -214,7 +214,7 @@ rule bin_maxbin2:
     resources:
         time = param_controller.calculate_maxbin_time,
         mem_mb = 125000, #125GB,
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """
         mkdir {output.bins_dir} -p
@@ -237,7 +237,7 @@ rule generate_consensus_bins_dastools:
     resources:
         time = param_controller.calculate_dastools_time,
         mem_mb = 125000, #125GB,
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """
         mkdir {output.dastools_bins} -p
@@ -276,7 +276,7 @@ checkpoint evaluate_bins_checkm:
     resources:
         time = param_controller.calculate_checkm_time,
         mem_mb = 120000, #120GB
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """
         mkdir {output.checkm_dir} -p
@@ -321,7 +321,7 @@ rule subset_reads_par:
     resources:
         time = param_controller.calculate_subset_par_time,
         mem_mb = 120000, #120GB
-        partition = "epyc-64"
+        partition = "msismall"
     params: 
         percentage = lambda wc: "{:02d}".format(int(wc.subset)),
         r_seed = seed
@@ -448,7 +448,7 @@ rule map_subassembly_reads:
     resources:
         time = param_controller.calculate_map_subassembly_time,
         mem_mb = 125000, #125GB
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """
         # NOTE: added double curly braces due to snakemake syntax in unix for loop
@@ -491,7 +491,7 @@ rule convert_bam_to_fastq:
     resources:
         time = param_controller.calculate_convert_bam_time,
         mem_mb = 120000, #120GB
-        partition = "epyc-64"
+        partition = "msismall"
     shell:
         """
         samtools bam2fq {input.bam} > {output.fastq}
@@ -543,7 +543,7 @@ rule subset_reads_ser:
     resources:
         time = param_controller.subset_reads_ser,
         mem_mb = 120000, #120GB
-        partition = "epyc-64"
+        partition = "msismall"
     params: 
         percentage = lambda wc: "{:02d}".format(int(wc.get("percentage")[:-7])) 
         # https://stackoverflow.com/questions/71326692/passing-wildcard-values-in-params-in-snakemake
