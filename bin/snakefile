@@ -70,7 +70,7 @@ rule sickle_trim_full:
         singles=base_dir + '{sample}_assembly/100percent_par/sickle_trimmed/{sample}_all_singles.fastq',
         trimmed=base_dir + '{sample}_assembly/100percent_par/sickle_trimmed/{sample}_all_trimmed.fastq'
     conda: "../envs/sickle.yml"
-    threads: 16
+    threads: param_controller.make_threads_getter('sickle_trim_full')
     resources:
         time = param_controller.calculate_sickle_trim_full_time,
         mem_mb = param_controller.calculate_sickle_trim_full_mem,
@@ -86,7 +86,7 @@ rule metaspades_assembly:
         spades_dir = directory(base_dir + '{sample}_assembly/{subset}_{modifier}/spades_assembly/'),
         contigs = base_dir + '{sample}_assembly/{subset}_{modifier}/spades_assembly/contigs.fasta'
     conda: "../envs/spades.yml"
-    threads: 64
+    threads: param_controller.make_threads_getter('metaspades_assembly')
     resources:
         time = param_controller.calculate_m_assembly_time,
         mem_mb = param_controller.calculate_m_assembly_mem,
