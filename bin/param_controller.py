@@ -42,7 +42,6 @@ def calculate_sickle_trim_full_partition(wildcards):
     config = get_yaml_fields()
     return config['slurm_resources']['sickle_trim_full']['partition']
 
-#
 def calculate_m_assembly_time(wildcards):
     config = get_yaml_fields()
     key = wildcards.subset.split('percent')[0]
@@ -109,3 +108,21 @@ def subset_reads_ser(wildcards):
     config = get_yaml_fields()
     key = wildcards.percentage.split('percent')[0]
     return config['slurm_resources']['subset_reads_ser']['time'][str("{0}_per".format(key))]
+
+def make_mem_getter(rule_name):
+    def _get(wildcards):
+        config = get_yaml_fields()
+        return config['slurm_resources'][rule_name]['mem']
+    return _get
+
+def make_partition_getter(rule_name):
+    def _get(wildcards):
+        config = get_yaml_fields()
+        return config['slurm_resources'][rule_name]['partition']
+    return _get
+
+def make_threads_getter(rule_name):
+    def _get(wildcards):
+        config = get_yaml_fields()
+        return config['slurm_resources'][rule_name]['cpus-per-task']
+    return _get
